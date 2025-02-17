@@ -38,21 +38,28 @@ class MaterialSymbolClassVisitor(
         val icon = classDeclaration.annotation(MaterialSymbol::name)
             .takeIf(String::isNotBlank) ?: className.simpleName.asSnackCase
 
-        @OptIn(KspExperimental::class)
-        val propertyDeclarationList = classDeclaration.getDeclaredProperties()
-            .filter { it.isAnnotationPresent(Style::class) && it.isAbstract() }
-            .toList()
-
-        val propertySpecList = propertyDeclarationList.map { propertyDeclaration ->
-            val materialSymbolIcon = MaterialSymbolIcon(propertyDeclaration)
-            val pathBuilderCommandList = MaterialSymbolsUseCase(icon, materialSymbolIcon, kspLogger)
-                .fetch(okHttpClient)
-
-            pathBuilderCommandList processWith MaterialSymbolsPropertyRepository(
-                propertyDeclaration, materialSymbolIcon
-            )
-        }
-
+        val propertySpecList = classDeclaration.getDeclaredProperties()
+            /**
+             * Use single method (i.e., [mapNotNullTo]) to do both
+             * (1) Filtering out abstract properties with @Style annotation; and
+             * (2) Map to property spec list
+             * with lesser loops and better readability.
+             **/
+            .mapNotNullTo(ArrayList()) { propertyDeclaration ->
+                @OptIn(KspExperimental::class)
+                when {
+                    // Filter out abstract properties with @Style annotation
+                    propertyDeclaration.isAnnotationPresent(Style::class) && propertyDeclaration.isAbstract() -> {
+                        // Map to property spec list
+                        val materialSymbolIcon = MaterialSymbolIcon(propertyDeclaration)
+                        val pathBuilderCommandList = MaterialSymbolsUseCase(icon, materialSymbolIcon, kspLogger)
+                            .fetch(okHttpClient)
+                        pathBuilderCommandList processWith
+                            MaterialSymbolsPropertyRepository(propertyDeclaration, materialSymbolIcon)
+                    }
+                    else -> { null }
+                }
+            }
         codeGenerator starts MaterialSymbolCoder(classDeclaration, propertySpecList)
     }
 }
