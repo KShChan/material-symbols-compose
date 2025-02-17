@@ -29,35 +29,32 @@ class PropertyValidator(
         val isAnnotatedProperty = property.isAnnotationPresent(Style::class)
         val isOpenProperty = property.isOpen()
 
-        // Abstract property with invalid type
-        if (isAbstractProperty && !isValidPropertyType) {
-            kspLogger.invalidAbstractPropertyError(property)
-            return Result.Error
+        return when {
+            // Abstract property with invalid type
+            isAbstractProperty && !isValidPropertyType -> {
+                kspLogger.invalidAbstractPropertyError(property)
+                Result.Error
+            }
+            isAbstractProperty && !isAnnotatedProperty -> {
+                kspLogger.noStyleAnnotatedPropertyError(property)
+                Result.Error
+            }
+            // Not targeted property
+            !isAbstractProperty && !isAnnotatedProperty -> {
+                // No need to be processed and logged
+                Result.Filter
+            }
+            !isOpenProperty && isValidPropertyType -> {
+                kspLogger.finalPropertyInfo(property)
+                Result.Filter
+            }
+            // Filter implemented property with @Style annotated
+            !isAbstractProperty && isOpenProperty && isValidPropertyType -> {
+                kspLogger.overriddenPropertyWarning(property)
+                Result.Filter
+            }
+            else -> { Result.Valid }
         }
-
-        if (isAbstractProperty && !isAnnotatedProperty) {
-            kspLogger.noStyleAnnotatedPropertyError(property)
-            return Result.Error
-        }
-
-        // Not targeted property
-        if (!isAbstractProperty && !isAnnotatedProperty) {
-            // No need to be processed and logged
-            return Result.Filter
-        }
-
-        if (!isOpenProperty && isValidPropertyType) {
-            kspLogger.finalPropertyInfo(property)
-            return Result.Filter
-        }
-
-        // Filter implemented property with @Style annotated
-        if (!isAbstractProperty && isOpenProperty && isValidPropertyType) {
-            kspLogger.overriddenPropertyWarning(property)
-            return Result.Filter
-        }
-
-        return Result.Valid
     }
 
 }
