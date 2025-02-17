@@ -5,6 +5,7 @@ import com.google.devtools.ksp.getDeclaredProperties
 import com.google.devtools.ksp.isOpen
 import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.KSNode
 import com.google.devtools.ksp.visitor.KSDefaultVisitor
 import me.ks.chan.material.symbols.ksp.validator.ClassValidator.Result.Ext.errorResult
@@ -35,32 +36,32 @@ class ClassValidator(
         throw IllegalAccessError()
 
     override fun visitClassDeclaration(
-        classDeclaration: KSClassDeclaration, data: Unit,
-    ): Result {
-        if (classDeclaration.getDeclaredFunctions().any { it.isAbstract }) {
+        classDeclaration: KSClassDeclaration, data: Unit
+    ): Result = when {
+        classDeclaration.getDeclaredFunctions().any(KSFunctionDeclaration::isAbstract) -> {
             kspLogger.abstractFunctionError(classDeclaration)
-            return classDeclaration.errorResult
+            classDeclaration.errorResult
         }
-
-        if (classDeclaration.isOpen().not()) {
+        classDeclaration.isOpen().not() -> {
             kspLogger.nonOpenClassInfo(classDeclaration)
-            return classDeclaration.filterResult
+            classDeclaration.filterResult
         }
+        else -> {
+            val propertyValidationResultList = classDeclaration.getDeclaredProperties()
+                .map { propertyDeclaration -> propertyDeclaration.accept(propertyValidator, Unit) }
 
-        val propertyValidationResultList = classDeclaration.getDeclaredProperties()
-            .map { propertyDeclaration -> propertyDeclaration.accept(propertyValidator, Unit) }
-
-        if (propertyValidationResultList.any { it == PropertyValidator.Result.Error }) {
-            // Detail content is logged in PropertyValidator
-            return classDeclaration.errorResult
+            when {
+                propertyValidationResultList.any { it == PropertyValidator.Result.Error } -> {
+                    // Detail content is logged in PropertyValidator
+                    classDeclaration.errorResult
+                }
+                propertyValidationResultList.none { it == PropertyValidator.Result.Valid } -> {
+                    kspLogger.noneOverridablePropertyInfo(classDeclaration)
+                    classDeclaration.filterResult
+                }
+                else -> { classDeclaration.passResult }
+            }
         }
-
-        if (propertyValidationResultList.none { it == PropertyValidator.Result.Valid }) {
-            kspLogger.noneOverridablePropertyInfo(classDeclaration)
-            return classDeclaration.filterResult
-        }
-
-        return classDeclaration.passResult
     }
 
 }
