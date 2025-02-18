@@ -16,26 +16,21 @@ class MaterialSymbolsUseCase(
     }
 
     init {
-        val iconName = icon.asPascalCase
-
-        kspLogger.apply {
-            info(
+        icon.asPascalCase.let { iconName ->
+            kspLogger.info(
                 "Icon=${iconName}: " +
                     "Style=${materialSymbolIcon.style.name}, " +
                     "Weight=${materialSymbolIcon.weight.name}, " +
                     "Grade=${materialSymbolIcon.grade.name}, " +
                     "Filled=${materialSymbolIcon.filled}"
             )
-            info("$iconName URL: ${materialSymbolsRepository.repositoryUrl}")
+            kspLogger.info("$iconName URL: ${materialSymbolsRepository.repositoryUrl}")
         }
     }
 
     fun fetch(okHttpClient: OkHttpClient): List<PathBuilderCommand> {
-        val vectorDrawable = materialSymbolsRepository.fetch(okHttpClient)
-        val pathCommandList = vectorDrawable processWith VectorDrawableRepository
-        val pathBuilderCommandList = pathCommandList processWith PathBuilderRepository
-
-        return pathBuilderCommandList
+        return materialSymbolsRepository.fetch(okHttpClient) processWith
+            VectorDrawableRepository processWith PathBuilderRepository
     }
 
 }
