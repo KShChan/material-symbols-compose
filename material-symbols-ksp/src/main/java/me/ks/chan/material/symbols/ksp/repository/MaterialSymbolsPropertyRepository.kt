@@ -17,10 +17,6 @@ class MaterialSymbolsPropertyRepository(
     materialSymbolIcon: MaterialSymbolIcon,
 ): ProcessRepository<List<PathBuilderCommand>, PropertySpec> {
 
-    private val iconName = buildString {
-        append(propertyDeclaration.qualifiedName!!.asString())
-    }
-
     private val opticalSize = materialSymbolIcon.opticalSizeInt
 
     override fun process(unprocessed: List<PathBuilderCommand>): PropertySpec {
@@ -31,7 +27,10 @@ class MaterialSymbolsPropertyRepository(
                 CodeBlock.builder()
                     .beginControlFlow(
                         controlFlow = "${MaterialSymbols.MaterialSymbol.short(Importable.NameType.Method)}(name = %S, size = %L)",
-                        args = arrayOf(iconName, opticalSize)
+                        args = arrayOf(
+                            /* name = */propertyDeclaration.qualifiedName!!.asString(),
+                            /* size = */opticalSize
+                        )
                     )
                     .addPathBuilderCommands(unprocessed)
                     .endControlFlow()
