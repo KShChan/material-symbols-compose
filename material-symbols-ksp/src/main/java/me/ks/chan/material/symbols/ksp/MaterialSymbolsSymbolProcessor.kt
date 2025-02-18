@@ -29,15 +29,20 @@ class MaterialSymbolsSymbolProcessor(
     }
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        val classDeclaration = resolver.getSymbolsWithAnnotation(MaterialSymbol::class.qualifiedName!!)
-            .filterIsInstance<KSClassDeclaration>()
+        val classValidationResultList = resolver.getSymbolsWithAnnotation(MaterialSymbol::class.qualifiedName!!)
+            .mapNotNull { ksAnnotated ->
+                when (ksAnnotated) {
+                    is KSClassDeclaration -> { ksAnnotated.accept(classValidator, Unit) }
+                    else -> { null }
+                }
+            }
             .toList()
 
-        val classValidationResultList = classDeclaration.map { it.accept(classValidator, Unit) }
         val validClassList = classValidationResultList.filterIsInstance<ClassValidator.Result.Pass>()
+            .toSet()
             .onEach { it.classDeclaration.accept(materialSymbolClassVisitor, Unit) }
 
-        return (classValidationResultList - validClassList.toSet())
+        return (classValidationResultList - validClassList)
             .map(ClassValidator.Result::classDeclaration)
     }
 
