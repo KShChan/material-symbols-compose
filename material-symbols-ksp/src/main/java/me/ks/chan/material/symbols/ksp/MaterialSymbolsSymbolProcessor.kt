@@ -10,7 +10,6 @@ import me.ks.chan.material.symbols.annotation.MaterialSymbol
 import me.ks.chan.material.symbols.ksp.coder.MaterialSymbolsCoder
 import me.ks.chan.material.symbols.ksp.coder.starts
 import me.ks.chan.material.symbols.ksp.validator.ClassValidator
-import me.ks.chan.material.symbols.ksp.validator.PropertyValidator
 import me.ks.chan.material.symbols.ksp.visitor.MaterialSymbolClassVisitor
 import okhttp3.OkHttpClient
 
@@ -24,10 +23,7 @@ class MaterialSymbolsSymbolProcessor(
         codeGenerator starts MaterialSymbolsCoder
     }
 
-    private val classValidator by lazy {
-        val propertyValidator = PropertyValidator(kspLogger)
-        ClassValidator(kspLogger, propertyValidator)
-    }
+    private val classValidator by lazy { ClassValidator(kspLogger) }
     private val materialSymbolClassVisitor by lazy {
         MaterialSymbolClassVisitor(kspLogger, codeGenerator, okHttpClient)
     }

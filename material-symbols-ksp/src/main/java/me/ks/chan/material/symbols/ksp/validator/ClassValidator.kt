@@ -14,7 +14,6 @@ import me.ks.chan.material.symbols.ksp.validator.ClassValidator.Result.Ext.passR
 
 class ClassValidator(
     private val kspLogger: KSPLogger,
-    private val propertyValidator: PropertyValidator,
 ): KSDefaultVisitor<Unit, ClassValidator.Result>() {
 
     sealed class Result(val classDeclaration: KSClassDeclaration) {
@@ -31,6 +30,8 @@ class ClassValidator(
                 get() = Error(this)
         }
     }
+
+    private val propertyValidator by lazy { PropertyValidator(kspLogger) }
 
     override fun defaultHandler(node: KSNode, data: Unit): Result =
         throw IllegalAccessError()
