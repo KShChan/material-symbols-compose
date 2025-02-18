@@ -54,8 +54,10 @@ class MaterialSymbolClassVisitor(
                         val materialSymbolIcon = MaterialSymbolIcon(propertyDeclaration)
                         val pathBuilderCommandList = MaterialSymbolsUseCase(icon, materialSymbolIcon, kspLogger)
                             .fetch(okHttpClient)
-                        pathBuilderCommandList processWith
+                        val materialSymbolsPropertyRepository =
                             MaterialSymbolsPropertyRepository(propertyDeclaration, materialSymbolIcon)
+
+                        pathBuilderCommandList processWith materialSymbolsPropertyRepository
                     }
                     else -> { null }
                 }
