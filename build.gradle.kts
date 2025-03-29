@@ -9,5 +9,5 @@ plugins {
 
 allprojects {
     group = "me.ks.chan.material-symbols-compose"
-    version = "1.0.0-rc2"
+    version = "1.0.0"
 }
