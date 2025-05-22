@@ -59,10 +59,10 @@ interface Home {
 
     @Style(MaterialSymbolStyle.Rounded)
     @Filled
-    val filled: ImageVector
+    val Filled: ImageVector
 }
 ```
-Then, build the icon with clicking Gradle panel `Gradle->Tasks->otherkspDebugKotlin`
+Then, build the icon with clicking Gradle panel `Gradle->Tasks->other->kspDebugKotlin`
 ```kotlin
 // import me.ks.chan.material.symbols.MaterialSymbols
 @Composable
@@ -70,28 +70,29 @@ Then, build the icon with clicking Gradle panel `Gradle->Tasks->otherkspDebugKot
 private fun Preview() {
     Column {
         FilledTonalIconButton(onClick = { /*TODO*/ }) {
-            Icon(imageVector = MaterialSymbols.Home.rounded, contentDescription = null)
+            Icon(imageVector = MaterialSymbols.Home.Rounded, contentDescription = "Rounded Home")
         }
 
         FilledIconButton(onClick = { /*TODO*/ }) {
-            MaterialSymbols.Home.FilledRoundedIcon(contentDescription = null)
+            Icon(imageVector = MaterialSymbols.Home.Filled, contentDescription = "Filled Rounded Home")
         }
 
         val interactionSource = remember { MutableInteractionSource() }
-        val isPressing by interactionSource.collectIsPressedAsState()
+        val isPressed by interactionSource.collectIsPressedAsState()
+        val (icon, contentDescription) by remember {
+            derivedStateOf {
+                when {
+                    isPressed -> { MaterialSymbols.Home.Filled to "Pressed: Filled Rounded Home" }
+                    else -> { MaterialSymbols.Home.Rounded to "Released Rounded Home" }
+                }
+            }
+        }
         FilledIconToggleButton(
-            checked = isPressing,
+            checked = isPressed,
             interactionSource = interactionSource,
             onCheckedChange = {},
         ) {
-            when {
-                isPressing -> {
-                    MaterialSymbols.Home.FilledRoundedIcon(contentDescription = null)
-                }
-                else -> {
-                    MaterialSymbols.Home.RoundedIcon(contentDescription = null)
-                }
-            }
+            Icon(imageVector = icon, contentDescription = contentDescription)
         }
     }
 }
