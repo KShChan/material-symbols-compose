@@ -8,27 +8,22 @@ import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.KSNode
 import com.google.devtools.ksp.visitor.KSDefaultVisitor
-import me.ks.chan.material.symbols.ksp.validator.ClassValidator.Result.Ext.errorResult
-import me.ks.chan.material.symbols.ksp.validator.ClassValidator.Result.Ext.filterResult
-import me.ks.chan.material.symbols.ksp.validator.ClassValidator.Result.Ext.passResult
+import me.ks.chan.material.symbols.ksp.validator.ClassValidator.Result.Error
+import me.ks.chan.material.symbols.ksp.validator.ClassValidator.Result.Filter
+import me.ks.chan.material.symbols.ksp.validator.ClassValidator.Result.Pass
 
 class ClassValidator(
     private val kspLogger: KSPLogger,
 ): KSDefaultVisitor<Unit, ClassValidator.Result>() {
 
     sealed class Result(val classDeclaration: KSClassDeclaration) {
+
         class Pass(classDeclaration: KSClassDeclaration): Result(classDeclaration)
+
         class Filter(classDeclaration: KSClassDeclaration): Result(classDeclaration)
+
         class Error(classDeclaration: KSClassDeclaration): Result(classDeclaration)
 
-        companion object Ext {
-            inline val KSClassDeclaration.passResult: Pass
-                get() = Pass(this)
-            inline val KSClassDeclaration.filterResult: Filter
-                get() = Filter(this)
-            inline val KSClassDeclaration.errorResult: Error
-                get() = Error(this)
-        }
     }
 
     private val propertyValidator by lazy { PropertyValidator(kspLogger) }
@@ -66,6 +61,15 @@ class ClassValidator(
     }
 
 }
+
+private inline val KSClassDeclaration.passResult: Pass
+    get() = Pass(this)
+
+private inline val KSClassDeclaration.filterResult: Filter
+    get() = Filter(this)
+
+private inline val KSClassDeclaration.errorResult: Error
+    get() = Error(this)
 
 private fun KSPLogger.abstractFunctionError(
     classDeclaration: KSClassDeclaration
