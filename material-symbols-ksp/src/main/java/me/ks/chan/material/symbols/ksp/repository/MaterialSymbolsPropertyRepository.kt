@@ -27,7 +27,7 @@ class MaterialSymbolsPropertyRepository(
                 CodeBlock.builder()
                     .beginControlFlow(
                         controlFlow = "${MaterialSymbols.MaterialSymbol.short(Importable.NameType.Method)}(name = %S, size = %L)",
-                        args = arrayOf(
+                        args = arrayOf<Any?>(
                             /* name = */propertyDeclaration.qualifiedName!!.asString(),
                             /* size = */opticalSize
                         )
