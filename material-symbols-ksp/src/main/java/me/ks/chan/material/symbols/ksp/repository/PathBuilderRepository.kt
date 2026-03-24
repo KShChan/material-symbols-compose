@@ -1,9 +1,6 @@
 package me.ks.chan.material.symbols.ksp.repository
 
-sealed class PathBuilderCommand(
-    val command: String,
-    val floatParameters: Array<Float>
-) {
+sealed class PathBuilderCommand(val command: String, val floatParameters: Array<Float>) {
     class LineTo(floatParameterList: List<Float>): PathBuilderCommand(
         command = "lineTo", floatParameters = floatParameterList.toTypedArray()
     )
@@ -13,9 +10,7 @@ sealed class PathBuilderCommand(
     class QuadTo(floatParameterList: List<Float>): PathBuilderCommand(
         command = "quadTo", floatParameters = floatParameterList.toTypedArray()
     )
-    data object Close : PathBuilderCommand(
-        command = "close", floatParameters = arrayOf()
-    )
+    data object Close : PathBuilderCommand(command = "close", floatParameters = arrayOf())
 }
 
 object PathBuilderRepository: ProcessRepository<List<String>, List<PathBuilderCommand>> {

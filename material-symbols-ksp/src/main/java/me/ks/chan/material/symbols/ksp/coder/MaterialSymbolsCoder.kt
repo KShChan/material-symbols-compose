@@ -52,8 +52,11 @@ private inline val MaterialSymbolsObject: TypeSpec
         .build()
 
 private data object ViewportSize {
+
     const val NAME = "ViewportSize"
+
     private const val VALUE = 960F
+
     private const val FORMAT = "%LF"
 
     inline val asProperty: PropertySpec
@@ -61,6 +64,7 @@ private data object ViewportSize {
             .addModifiers(KModifier.PRIVATE)
             .initializer(FORMAT, VALUE)
             .build()
+
 }
 
 private inline val PathBuilderBlock: LambdaTypeName

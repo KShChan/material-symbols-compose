@@ -12,9 +12,7 @@ import me.ks.chan.material.symbols.ksp.validator.ClassValidator.Result.Error
 import me.ks.chan.material.symbols.ksp.validator.ClassValidator.Result.Filter
 import me.ks.chan.material.symbols.ksp.validator.ClassValidator.Result.Pass
 
-class ClassValidator(
-    private val kspLogger: KSPLogger,
-): KSDefaultVisitor<Unit, ClassValidator.Result>() {
+class ClassValidator(private val kspLogger: KSPLogger): KSDefaultVisitor<Unit, ClassValidator.Result>() {
 
     sealed class Result(val classDeclaration: KSClassDeclaration) {
 

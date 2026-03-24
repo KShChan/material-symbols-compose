@@ -16,9 +16,9 @@ import me.ks.chan.material.symbols.ksp.ext.MaterialSymbols
 import me.ks.chan.material.symbols.ksp.ext.import
 
 class MaterialSymbolCoder(
-    private val classDeclaration: KSClassDeclaration,
-    private val propertySpecList: List<PropertySpec>
+    private val classDeclaration: KSClassDeclaration, private val propertySpecList: List<PropertySpec>
 ): Coder {
+
     override val dependencies = Dependencies(aggregating = true, classDeclaration.containingFile!!)
 
     override val fileSpec: FileSpec
@@ -61,7 +61,7 @@ private fun FileSpec.Builder.addImports() = apply {
 private fun TypeSpec.Builder.supertype(
     classDeclaration: KSClassDeclaration,
     className: ClassName,
-    isInterface: Boolean = classDeclaration.classKind == ClassKind.INTERFACE,
+    isInterface: Boolean = classDeclaration.classKind == ClassKind.INTERFACE
 ): TypeSpec.Builder = when {
     isInterface -> { addSuperinterface(className) }
     else -> { superclass(className) }

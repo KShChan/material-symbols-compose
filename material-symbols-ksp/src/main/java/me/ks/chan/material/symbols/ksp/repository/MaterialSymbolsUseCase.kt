@@ -5,11 +5,7 @@ import me.ks.chan.material.symbols.ksp.annotation.MaterialSymbolIcon
 import me.ks.chan.material.symbols.ksp.ext.asPascalCase
 import okhttp3.OkHttpClient
 
-class MaterialSymbolsUseCase(
-    icon: String,
-    materialSymbolIcon: MaterialSymbolIcon,
-    kspLogger: KSPLogger,
-) {
+class MaterialSymbolsUseCase(icon: String, materialSymbolIcon: MaterialSymbolIcon, kspLogger: KSPLogger) {
 
     private val materialSymbolsRepository by lazy {
         GoogleMaterialSymbolsRepository(icon, materialSymbolIcon)

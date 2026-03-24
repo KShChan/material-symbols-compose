@@ -14,9 +14,7 @@ import me.ks.chan.material.symbols.ksp.visitor.MaterialSymbolClassVisitor
 import okhttp3.OkHttpClient
 
 class MaterialSymbolsSymbolProcessor(
-    codeGenerator: CodeGenerator,
-    kspLogger: KSPLogger,
-    okHttpClient: OkHttpClient,
+    codeGenerator: CodeGenerator, kspLogger: KSPLogger, okHttpClient: OkHttpClient
 ): SymbolProcessor {
 
     init {

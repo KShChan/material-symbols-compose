@@ -8,10 +8,7 @@ import me.ks.chan.material.symbols.ksp.annotation.MaterialSymbolIcon
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
-class GoogleMaterialSymbolsRepository(
-    icon: String,
-    materialSymbolIcon: MaterialSymbolIcon,
-) {
+class GoogleMaterialSymbolsRepository(icon: String, materialSymbolIcon: MaterialSymbolIcon) {
 
     val repositoryUrl by lazy {
         with(materialSymbolIcon) {

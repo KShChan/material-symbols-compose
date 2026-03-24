@@ -13,8 +13,7 @@ import me.ks.chan.material.symbols.ksp.ext.Importable
 import me.ks.chan.material.symbols.ksp.ext.MaterialSymbols
 
 class MaterialSymbolsPropertyRepository(
-    private val propertyDeclaration: KSPropertyDeclaration,
-    materialSymbolIcon: MaterialSymbolIcon,
+    private val propertyDeclaration: KSPropertyDeclaration, materialSymbolIcon: MaterialSymbolIcon,
 ): ProcessRepository<List<PathBuilderCommand>, PropertySpec> {
 
     private val opticalSize = materialSymbolIcon.opticalSizeInt

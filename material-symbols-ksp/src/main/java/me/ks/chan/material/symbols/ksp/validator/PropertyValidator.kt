@@ -12,9 +12,7 @@ import com.squareup.kotlinpoet.ksp.toClassName
 import me.ks.chan.material.symbols.annotation.Style
 import me.ks.chan.material.symbols.ksp.ext.ComposeUiVectorGraphics
 
-class PropertyValidator(
-    private val kspLogger: KSPLogger,
-): KSDefaultVisitor<Unit, PropertyValidator.Result>() {
+class PropertyValidator(private val kspLogger: KSPLogger): KSDefaultVisitor<Unit, PropertyValidator.Result>() {
 
     override fun defaultHandler(node: KSNode, data: Unit): Result =
         throw IllegalAccessError()

@@ -5,9 +5,7 @@ import com.squareup.kotlinpoet.FileSpec
 
 internal sealed class Importable {
 
-    enum class NameType {
-        Class, Method
-    }
+    enum class NameType { Class, Method }
 
     abstract val packageName: String
 
@@ -29,6 +27,7 @@ internal sealed class Importable {
 }
 
 internal data object MaterialSymbols: Importable() {
+
     override val packageName: String
         get() = "me.ks.chan.material.symbols"
 
@@ -36,6 +35,7 @@ internal data object MaterialSymbols: Importable() {
         override val packageName: String
             get() = MaterialSymbols.packageName
     }
+
 }
 
 internal sealed class ComposeUi: Importable() {
@@ -44,33 +44,38 @@ internal sealed class ComposeUi: Importable() {
 }
 
 internal sealed class ComposeUiGraphics: ComposeUi() {
+
     override val packageName: String
         get() = "${super.packageName}.graphics"
 
     data object Color: ComposeUiGraphics()
     data object SolidColor: ComposeUiGraphics()
     data object StrokeJoin: ComposeUiGraphics()
+
 }
 
 internal sealed class ComposeUiVectorGraphics: ComposeUiGraphics() {
+
     override val packageName: String
         get() = "${super.packageName}.vector"
 
     data object ImageVector: ComposeUiVectorGraphics()
     data object PathBuilder: ComposeUiVectorGraphics()
     data object Path: ComposeUiVectorGraphics()
+
 }
 
 internal sealed class ComposeUiUnit: ComposeUi() {
+
     override val packageName: String
         get() = "${super.packageName}.unit"
 
     data object Dp: ComposeUiUnit()
+
 }
 
 internal fun FileSpec.Builder.import(
-    importable: Importable,
-    nameType: Importable.NameType = Importable.NameType.Class
+    importable: Importable, nameType: Importable.NameType = Importable.NameType.Class
 ): FileSpec.Builder = apply {
     addImport(importable.packageName, importable.short(nameType))
 }

@@ -12,9 +12,7 @@ import me.ks.chan.material.symbols.ksp.option.network.ProxyOption.proxyPort
 import okhttp3.Cache
 import okhttp3.OkHttpClient
 
-fun SymbolProcessorEnvironment.okHttpClient(
-    kspLogger: KSPLogger
-): OkHttpClient {
+fun SymbolProcessorEnvironment.okHttpClient(kspLogger: KSPLogger): OkHttpClient {
     return OkHttpClient.Builder()
         .also { builder: OkHttpClient.Builder ->
             configureProxyOptions(kspLogger)?.let(builder::proxy)

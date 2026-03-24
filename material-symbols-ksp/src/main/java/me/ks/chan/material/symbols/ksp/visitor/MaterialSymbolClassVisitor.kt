@@ -28,9 +28,7 @@ import me.ks.chan.material.symbols.ksp.repository.processWith
 import okhttp3.OkHttpClient
 
 class MaterialSymbolClassVisitor(
-    private val kspLogger: KSPLogger,
-    private val codeGenerator: CodeGenerator,
-    private val okHttpClient: OkHttpClient,
+    private val kspLogger: KSPLogger, private val codeGenerator: CodeGenerator, private val okHttpClient: OkHttpClient
 ): KSVisitorVoid() {
     override fun visitClassDeclaration(classDeclaration: KSClassDeclaration, data: Unit) {
         val className = classDeclaration.toClassName()
