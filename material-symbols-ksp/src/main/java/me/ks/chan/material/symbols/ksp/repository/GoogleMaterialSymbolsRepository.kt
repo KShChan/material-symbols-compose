@@ -13,15 +13,15 @@ class GoogleMaterialSymbolsRepository(
     materialSymbolIcon: MaterialSymbolIcon,
 ) {
 
-    @Suppress("SpellCheckingInspection")
     val repositoryUrl by lazy {
-        "https://raw.githubusercontent.com/google/material-design-icons/master/symbols/android/" +
-            icon + "/materialsymbols" + materialSymbolIcon.styleUrlOption + '/' +
-            icon + materialSymbolIcon.customizationOption +
-            "_${materialSymbolIcon.opticalSizeInt}px.xml"
+        with(materialSymbolIcon) {
+            @Suppress("SpellCheckingInspection")
+            "https://raw.githubusercontent.com/google/material-design-icons/master/symbols/android/$icon/materialsymbols" +
+                "$styleUrlOption/$icon${customizationOption}_${opticalSizeInt}px.xml"
+        }
     }
 
-    private val repositoryRequest: Request
+    private inline val repositoryRequest: Request
         get() = Request.Builder()
             .url(repositoryUrl)
             .get()
@@ -30,10 +30,17 @@ class GoogleMaterialSymbolsRepository(
     fun fetch(okHttpClient: OkHttpClient): String =
         okHttpClient.newCall(repositoryRequest)
             .execute()
-            .body!!
+            .body
             .string()
 
 }
+
+private inline val MaterialSymbolIcon.styleUrlOption: String
+    get() = when (style) {
+        MaterialSymbolStyle.Outlined -> "outlined"
+        MaterialSymbolStyle.Rounded -> "rounded"
+        MaterialSymbolStyle.Sharp -> "sharp"
+    }
 
 private inline val MaterialSymbolIcon.customizationOption: String
     get() = when {
@@ -45,13 +52,6 @@ private inline val MaterialSymbolIcon.customizationOption: String
 
 private inline val MaterialSymbolIcon.filledUrlOption: String
     get() = if (filled) "fill1" else ""
-
-private inline val MaterialSymbolIcon.styleUrlOption: String
-    get() = when (style) {
-        MaterialSymbolStyle.Outlined -> "outlined"
-        MaterialSymbolStyle.Rounded -> "rounded"
-        MaterialSymbolStyle.Sharp -> "sharp"
-    }
 
 private inline val MaterialSymbolIcon.weightUrlOption: String
     get() = when (weight) {
