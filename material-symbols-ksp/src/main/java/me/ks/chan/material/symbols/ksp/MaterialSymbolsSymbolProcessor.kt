@@ -21,10 +21,8 @@ class MaterialSymbolsSymbolProcessor(
         codeGenerator starts MaterialSymbolsCoder
     }
 
-    private val classValidator by lazy { ClassValidator(kspLogger) }
-    private val materialSymbolClassVisitor by lazy {
-        MaterialSymbolClassVisitor(kspLogger, codeGenerator, okHttpClient)
-    }
+    private val classValidator = ClassValidator(kspLogger)
+    private val materialSymbolClassVisitor = MaterialSymbolClassVisitor(kspLogger, codeGenerator, okHttpClient)
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
         val classValidationResultList = resolver.getSymbolsWithAnnotation(MaterialSymbol::class.qualifiedName!!)

@@ -1,34 +1,29 @@
 package me.ks.chan.material.symbols.ksp.repository
 
+import com.google.devtools.ksp.processing.KSPLogger
 import me.ks.chan.material.symbols.annotation.MaterialSymbolGrade
 import me.ks.chan.material.symbols.annotation.MaterialSymbolOpticalSize
 import me.ks.chan.material.symbols.annotation.MaterialSymbolStyle
 import me.ks.chan.material.symbols.annotation.MaterialSymbolWeight
 import me.ks.chan.material.symbols.ksp.annotation.MaterialSymbolIcon
-import okhttp3.OkHttpClient
-import okhttp3.Request
+import me.ks.chan.material.symbols.ksp.ext.asPascalCase
 
-class GoogleMaterialSymbolsRepository(icon: String, materialSymbolIcon: MaterialSymbolIcon) {
+class MaterialDesignIconsRepository(private val kspLogger: KSPLogger) {
 
-    val repositoryUrl by lazy {
-        with(materialSymbolIcon) {
-            @Suppress("SpellCheckingInspection")
-            "https://raw.githubusercontent.com/google/material-design-icons/master/symbols/android/$icon/materialsymbols" +
-                "$styleUrlOption/$icon${customizationOption}_${opticalSizeInt}px.xml"
+    operator fun invoke(icon: String, materialSymbolIcon: MaterialSymbolIcon): String {
+        kspLogger.info(
+            "Icon=${icon.asPascalCase}: " +
+                "Style=${materialSymbolIcon.style.name}, " +
+                "Weight=${materialSymbolIcon.weight.name}, " +
+                "Grade=${materialSymbolIcon.grade.name}, " +
+                "Filled=${materialSymbolIcon.filled}"
+        )
+
+        return with(materialSymbolIcon) {
+            "https://raw.githubusercontent.com/google/material-design-icons/master/symbols/android/" +
+                "$icon/materialsymbols$styleUrlOption/$icon${customizationOption}_${opticalSizeInt}px.xml"
         }
     }
-
-    private inline val repositoryRequest: Request
-        get() = Request.Builder()
-            .url(repositoryUrl)
-            .get()
-            .build()
-
-    fun fetch(okHttpClient: OkHttpClient): String =
-        okHttpClient.newCall(repositoryRequest)
-            .execute()
-            .body
-            .string()
 
 }
 

@@ -22,20 +22,23 @@ import me.ks.chan.material.symbols.ksp.coder.starts
 import me.ks.chan.material.symbols.ksp.ext.annotation
 import me.ks.chan.material.symbols.ksp.ext.annotationOrNull
 import me.ks.chan.material.symbols.ksp.ext.asSnackCase
+import me.ks.chan.material.symbols.ksp.repository.MaterialDesignIconsRepository
 import me.ks.chan.material.symbols.ksp.repository.MaterialSymbolsPropertyRepository
-import me.ks.chan.material.symbols.ksp.repository.MaterialSymbolsUseCase
+import me.ks.chan.material.symbols.ksp.repository.MaterialSymbolsRepository
+import me.ks.chan.material.symbols.ksp.repository.PathBuilderRepository
+import me.ks.chan.material.symbols.ksp.repository.VectorDrawableRepository
 import me.ks.chan.material.symbols.ksp.repository.processWith
 import okhttp3.OkHttpClient
 
 class MaterialSymbolClassVisitor(
-    private val kspLogger: KSPLogger, private val codeGenerator: CodeGenerator, private val okHttpClient: OkHttpClient
+    kspLogger: KSPLogger, private val codeGenerator: CodeGenerator, okHttpClient: OkHttpClient
 ): KSVisitorVoid() {
+
+    private val buildIconUrl = MaterialDesignIconsRepository(kspLogger)
+    private val requestMaterialSymbol = MaterialSymbolsRepository(okHttpClient, kspLogger)
+
     override fun visitClassDeclaration(classDeclaration: KSClassDeclaration, data: Unit) {
-        val className = classDeclaration.toClassName()
-
-        val icon = classDeclaration.annotation(MaterialSymbol::name)
-            .takeIf(String::isNotBlank) ?: className.simpleName.asSnackCase
-
+        val iconName by classDeclaration.materialSymbolName
         val propertySpecList = classDeclaration.getDeclaredProperties()
             /**
              * Use single method (i.e., [mapNotNullTo]) to do both
@@ -44,32 +47,37 @@ class MaterialSymbolClassVisitor(
              * with lesser loops and better readability.
              **/
             .mapNotNullTo(ArrayList()) { propertyDeclaration ->
-                @OptIn(KspExperimental::class)
-                when {
-                    // Filter out abstract properties with @Style annotation
-                    propertyDeclaration.isAnnotationPresent(Style::class) && propertyDeclaration.isAbstract() -> {
+                // Filter out abstract properties with @Style annotation
+                propertyDeclaration.takeIf(KSPropertyDeclaration::isStyleAnnotatedAbstractProperty)
+                    ?.let {
                         // Map to property spec list
-                        val materialSymbolIcon = MaterialSymbolIcon(propertyDeclaration)
-                        val pathBuilderCommandList = MaterialSymbolsUseCase(icon, materialSymbolIcon, kspLogger)
-                            .fetch(okHttpClient)
-                        val materialSymbolsPropertyRepository =
+                        val materialSymbolIcon = propertyDeclaration.asMaterialSymbolIcon
+                        requestMaterialSymbol(buildIconUrl(iconName, materialSymbolIcon)) processWith
+                            VectorDrawableRepository processWith
+                            PathBuilderRepository processWith
                             MaterialSymbolsPropertyRepository(propertyDeclaration, materialSymbolIcon)
-
-                        pathBuilderCommandList processWith materialSymbolsPropertyRepository
                     }
-                    else -> { null }
-                }
             }
         codeGenerator starts MaterialSymbolCoder(classDeclaration, propertySpecList)
     }
+
 }
 
-private fun MaterialSymbolIcon(propertyDeclaration: KSPropertyDeclaration): MaterialSymbolIcon {
-    return MaterialSymbolIcon(
-        style = propertyDeclaration.annotation(Style::value),
-        weight = propertyDeclaration.annotationOrNull(Weight::value),
-        grade = propertyDeclaration.annotationOrNull(Grade::value),
-        filled = propertyDeclaration.annotationOrNull<Filled>() != null,
-        opticalSize = propertyDeclaration.annotationOrNull(OpticalSize::value),
+private inline val KSClassDeclaration.materialSymbolName: Lazy<String>
+    get() = lazy {
+        annotation(MaterialSymbol::name).takeIf(String::isNotBlank) ?:
+            toClassName().simpleName.asSnackCase
+    }
+
+private inline val KSPropertyDeclaration.isStyleAnnotatedAbstractProperty: Boolean
+    @OptIn(KspExperimental::class)
+    get() = isAnnotationPresent(Style::class) && isAbstract()
+
+private val KSPropertyDeclaration.asMaterialSymbolIcon: MaterialSymbolIcon
+    get() = MaterialSymbolIcon(
+        style = annotation(Style::value),
+        weight = annotationOrNull(Weight::value),
+        grade = annotationOrNull(Grade::value),
+        filled = annotationOrNull<Filled>() != null,
+        opticalSize = annotationOrNull(OpticalSize::value),
     )
-}
