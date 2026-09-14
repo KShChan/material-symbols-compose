@@ -34,8 +34,8 @@ class MaterialSymbolClassVisitor(
     kspLogger: KSPLogger, private val codeGenerator: CodeGenerator, okHttpClient: OkHttpClient
 ): KSVisitorVoid() {
 
-    private val buildIconUrl = MaterialDesignIconsRepository(kspLogger)
-    private val requestMaterialSymbol = MaterialSymbolsRepository(okHttpClient, kspLogger)
+    private val buildIconUrlWith: String.(MaterialSymbolIcon) -> String = MaterialDesignIconsRepository(kspLogger)::invoke
+    private val requestMaterialSymbol: String.() -> String = MaterialSymbolsRepository(okHttpClient, kspLogger)::invoke
 
     override fun visitClassDeclaration(classDeclaration: KSClassDeclaration, data: Unit) {
         val iconName by classDeclaration.materialSymbolName
@@ -52,10 +52,17 @@ class MaterialSymbolClassVisitor(
                     ?.let {
                         // Map to property spec list
                         val materialSymbolIcon = propertyDeclaration.asMaterialSymbolIcon
-                        requestMaterialSymbol(buildIconUrl(iconName, materialSymbolIcon)) processWith
-                            VectorDrawableRepository processWith
-                            PathBuilderRepository processWith
-                            MaterialSymbolsPropertyRepository(propertyDeclaration, materialSymbolIcon)
+
+                        iconName.buildIconUrlWith(materialSymbolIcon)
+                            .requestMaterialSymbol()
+                            .processWith(VectorDrawableRepository)
+                            .processWith(PathBuilderRepository)
+                            .processWith(
+                                MaterialSymbolsPropertyRepository(
+                                    propertyDeclaration, materialSymbolIcon
+                                )
+                            )
+
                     }
             }
         codeGenerator starts MaterialSymbolCoder(classDeclaration, propertySpecList)
