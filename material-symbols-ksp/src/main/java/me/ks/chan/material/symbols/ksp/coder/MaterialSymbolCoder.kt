@@ -6,6 +6,7 @@ import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.ksp.addOriginatingKSFile
@@ -19,7 +20,8 @@ class MaterialSymbolCoder(
     private val classDeclaration: KSClassDeclaration, private val propertySpecList: List<PropertySpec>
 ): Coder {
 
-    override val dependencies = Dependencies(aggregating = true, classDeclaration.containingFile!!)
+    override val dependencies: Dependencies
+        get() = Dependencies(aggregating = true, classDeclaration.containingFile!!)
 
     override val fileSpec: FileSpec
         get() {
@@ -27,10 +29,15 @@ class MaterialSymbolCoder(
             val classname = supertype.simpleName + "Impl"
 
             return FileSpec.builder(supertype.packageName, classname)
-                .addImports()
+                .import(ComposeUiVectorGraphics.ImageVector)
+                .import(MaterialSymbols)
+                .import(MaterialSymbols.MaterialSymbol, Importable.NameType.Method)
                 .addType(
                     TypeSpec.objectBuilder(classname)
                         .addOriginatingKSFile(classDeclaration.containingFile!!)
+                        // Do not expose impl object, just let it be handled by getter delegate method
+                        .addModifiers(KModifier.PRIVATE)
+                        .addModifiers(KModifier.DATA)
                         .supertype(classDeclaration, supertype)
                         .addProperties(propertySpecList)
                         .build()
@@ -52,17 +59,9 @@ class MaterialSymbolCoder(
 
 }
 
-private fun FileSpec.Builder.addImports() = apply {
-    import(ComposeUiVectorGraphics.ImageVector)
-    import(MaterialSymbols)
-    import(MaterialSymbols.MaterialSymbol, Importable.NameType.Method)
-}
-
 private fun TypeSpec.Builder.supertype(
-    classDeclaration: KSClassDeclaration,
-    className: ClassName,
-    isInterface: Boolean = classDeclaration.classKind == ClassKind.INTERFACE
+    classDeclaration: KSClassDeclaration, className: ClassName,
 ): TypeSpec.Builder = when {
-    isInterface -> { addSuperinterface(className) }
+    classDeclaration.classKind == ClassKind.INTERFACE -> { addSuperinterface(className) }
     else -> { superclass(className) }
 }
