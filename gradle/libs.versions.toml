@@ -2,7 +2,7 @@
 android-gradle-plugin = "9.2.1"
 kotlin = "2.4.10"
 ksp = "2.3.11"
-kotlinpoet = "2.3.0"
+kotlinpoet = "2.4.0"
 okhttp = "5.5.0"
 
 androidx-core = "1.19.0"
