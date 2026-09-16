@@ -7,20 +7,32 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import me.ks.chan.material.symbols.MaterialSymbols
+import me.ks.chan.material.symbols.annotation.Filled
 import me.ks.chan.material.symbols.annotation.MaterialSymbol
 import me.ks.chan.material.symbols.annotation.MaterialSymbolStyle
+import me.ks.chan.material.symbols.annotation.PreviewIcon
+import me.ks.chan.material.symbols.annotation.SkipPreview
 import me.ks.chan.material.symbols.annotation.Style
 
 /** 1. Annotate @MaterialSymbol **/
 @MaterialSymbol
-/** 2. Define `abstract class` **/
+/** 2. Annotate @MaterialSymbol **/
+@PreviewIcon
+/** 3. Define `abstract class` **/
 abstract class Settings {
 
-    /** 3. Annotate @Style with parameter filled with [MaterialSymbolStyle] **/
+    /** 4 Protected icon abstraction property should be skipped preventing preview method access error **/
+    @SkipPreview
+    /** 5. Annotate @Style with parameter filled with [MaterialSymbolStyle] **/
     @Style(MaterialSymbolStyle.Rounded)
-    /** 4. Define `abstract` property **/
+    /** 6. Define `abstract` property **/
     protected /** 5. You can specify protected modifier in abstract class **/
     abstract val rounded: ImageVector /** 6. Define property type as [ImageVector] **/
+
+    /** Public icon abstraction property for preview composable method accessing **/
+    @Style(MaterialSymbolStyle.Rounded)
+    @Filled
+    abstract val filled: ImageVector /** 6. Define property type as [ImageVector] **/
 
     /**
      * CAUTION:

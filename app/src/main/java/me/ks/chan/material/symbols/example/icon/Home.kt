@@ -19,16 +19,19 @@ import me.ks.chan.material.symbols.annotation.OpticalSize
 import me.ks.chan.material.symbols.annotation.Weight
 import me.ks.chan.material.symbols.annotation.MaterialSymbol
 import me.ks.chan.material.symbols.annotation.MaterialSymbolStyle
+import me.ks.chan.material.symbols.annotation.PreviewIcon
 import me.ks.chan.material.symbols.annotation.Style
 
 /** 1. Annotate @MaterialSymbol **/
 @MaterialSymbol
-/** 2. Define `interface` **/
+/** 2. Annotate @MaterialSymbol **/
+@PreviewIcon
+/** 3. Define `interface` **/
 interface Home {
 
-    /** 3. Annotate @Style with parameter filled with [MaterialSymbolStyle] **/
+    /** 4. Annotate @Style with parameter filled with [MaterialSymbolStyle] **/
     @Style(MaterialSymbolStyle.Rounded)
-    /** 4. Define `abstract` property (without content implementation) **/
+    /** 5. Define `abstract` property (without content implementation) **/
     val rounded: ImageVector    /** 5. Define property type as [ImageVector] **/
 
     /** Other same as well. **/
