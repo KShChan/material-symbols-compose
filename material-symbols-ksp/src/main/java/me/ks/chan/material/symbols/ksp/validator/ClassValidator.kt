@@ -8,6 +8,8 @@ import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.KSNode
 import com.google.devtools.ksp.visitor.KSDefaultVisitor
+import me.ks.chan.material.symbols.annotation.PreviewIcon
+import me.ks.chan.material.symbols.ksp.ext.annotationExists
 import me.ks.chan.material.symbols.ksp.validator.ClassValidator.Result.Error
 import me.ks.chan.material.symbols.ksp.validator.ClassValidator.Result.Filter
 import me.ks.chan.material.symbols.ksp.validator.ClassValidator.Result.Pass
@@ -24,7 +26,7 @@ class ClassValidator(private val kspLogger: KSPLogger): KSDefaultVisitor<Unit, C
 
     }
 
-    private val propertyValidator by lazy { PropertyValidator(kspLogger) }
+    private val propertyValidator = PropertyValidator(kspLogger)
 
     override fun defaultHandler(node: KSNode, data: Unit): Result =
         throw IllegalAccessError()
@@ -41,8 +43,9 @@ class ClassValidator(private val kspLogger: KSPLogger): KSDefaultVisitor<Unit, C
             classDeclaration.filterResult
         }
         else -> {
+            val isPreviewIcon = classDeclaration.annotationExists<PreviewIcon>()
             val propertyValidationResultList = classDeclaration.getDeclaredProperties()
-                .map { propertyDeclaration -> propertyDeclaration.accept(propertyValidator, Unit) }
+                .map { propertyDeclaration -> propertyDeclaration.accept(propertyValidator, isPreviewIcon) }
 
             when {
                 propertyValidationResultList.any { it == PropertyValidator.Result.Error } -> {

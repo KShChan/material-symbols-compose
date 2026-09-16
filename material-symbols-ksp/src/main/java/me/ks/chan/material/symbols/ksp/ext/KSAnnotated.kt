@@ -8,14 +8,15 @@ import com.google.devtools.ksp.symbol.KSAnnotated
 inline fun <reified A: Annotation> KSAnnotated.annotation(): A =
     getAnnotationsByType(A::class).single()
 
-inline fun <reified A: Annotation, R> KSAnnotated.annotation(
-    transform: A.() -> R
-): R = annotation<A>().transform()
+inline fun <reified A: Annotation, R> KSAnnotated.annotation(transform: A.() -> R): R =
+    annotation<A>().transform()
 
 @OptIn(KspExperimental::class)
 inline fun <reified A: Annotation> KSAnnotated.annotationOrNull(): A? =
     getAnnotationsByType(A::class).singleOrNull()
 
-inline fun <reified A: Annotation, R> KSAnnotated.annotationOrNull(
-    transform: A.() -> R
-): R? = annotationOrNull<A>()?.transform()
+inline fun <reified A: Annotation, R> KSAnnotated.annotationOrNull(transform: A.() -> R): R? =
+    annotationOrNull<A>()?.transform()
+
+inline fun <reified A: Annotation> KSAnnotated.annotationExists(): Boolean =
+    annotationOrNull<A>() != null

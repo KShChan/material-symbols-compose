@@ -38,9 +38,34 @@ internal data object MaterialSymbols: Importable() {
 
 }
 
-internal sealed class ComposeUi: Importable() {
+internal sealed class Compose: Importable() {
     override val packageName: String
-        get() = "androidx.compose.ui"
+        get() = "androidx.compose"
+}
+
+internal sealed class ComposeMaterial3: Compose() {
+
+    override val packageName: String
+        get() = "${super.packageName}.material3"
+
+    data object Icon: ComposeMaterial3()
+
+}
+
+internal sealed class ComposeRuntime: Compose() {
+
+    override val packageName: String
+        get() = "${super.packageName}.runtime"
+
+    data object Composable: ComposeRuntime()
+
+}
+
+internal sealed class ComposeUi: Compose() {
+
+    override val packageName: String
+        get() = "${super.packageName}.ui"
+
 }
 
 internal sealed class ComposeUiGraphics: ComposeUi() {
@@ -51,6 +76,20 @@ internal sealed class ComposeUiGraphics: ComposeUi() {
     data object Color: ComposeUiGraphics()
     data object SolidColor: ComposeUiGraphics()
     data object StrokeJoin: ComposeUiGraphics()
+
+}
+
+internal sealed class ComposeUiTooling: ComposeUi() {
+    override val packageName: String
+        get() = "${super.packageName}.tooling"
+}
+
+internal sealed class ComposeUiToolingPreview: ComposeUiTooling() {
+
+    override val packageName: String
+        get() = "${super.packageName}.preview"
+
+    data object Preview: ComposeUiToolingPreview()
 
 }
 
@@ -75,7 +114,16 @@ internal sealed class ComposeUiUnit: ComposeUi() {
 }
 
 internal fun FileSpec.Builder.import(
-    importable: Importable, nameType: Importable.NameType = Importable.NameType.Class
+    importable: Importable,
+    nameType: Importable.NameType = Importable.NameType.Class
+): FileSpec.Builder = addImport(importable.packageName, importable.short(nameType))
+
+internal fun FileSpec.Builder.predicateImport(
+    importable: Importable,
+    nameType: Importable.NameType = Importable.NameType.Class,
+    predicate: () -> Boolean
 ): FileSpec.Builder = apply {
-    addImport(importable.packageName, importable.short(nameType))
+    if (predicate()) {
+        addImport(importable.packageName, importable.short(nameType))
+    }
 }

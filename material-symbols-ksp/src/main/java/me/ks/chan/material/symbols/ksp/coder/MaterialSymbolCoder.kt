@@ -11,13 +11,17 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.ksp.addOriginatingKSFile
 import com.squareup.kotlinpoet.ksp.toClassName
+import me.ks.chan.material.symbols.ksp.ext.ComposeMaterial3
 import me.ks.chan.material.symbols.ksp.ext.ComposeUiVectorGraphics
 import me.ks.chan.material.symbols.ksp.ext.Importable
 import me.ks.chan.material.symbols.ksp.ext.MaterialSymbols
 import me.ks.chan.material.symbols.ksp.ext.import
+import me.ks.chan.material.symbols.ksp.ext.predicateImport
 
 class MaterialSymbolCoder(
-    private val classDeclaration: KSClassDeclaration, private val propertySpecList: List<PropertySpec>
+    private val classDeclaration: KSClassDeclaration,
+    private val iconStyledPropertySpecList: List<PropertySpec>,
+    private val previewIconFunSpecList: List<FunSpec>
 ): Coder {
 
     override val dependencies: Dependencies
@@ -30,6 +34,10 @@ class MaterialSymbolCoder(
 
             return FileSpec.builder(supertype.packageName, classname)
                 .import(ComposeUiVectorGraphics.ImageVector)
+                .predicateImport(
+                    importable = ComposeMaterial3.Icon,
+                    predicate = previewIconFunSpecList::isNotEmpty
+                )
                 .import(MaterialSymbols)
                 .import(MaterialSymbols.MaterialSymbol, Importable.NameType.Method)
                 .addType(
@@ -39,7 +47,7 @@ class MaterialSymbolCoder(
                         .addModifiers(KModifier.PRIVATE)
                         .addModifiers(KModifier.DATA)
                         .supertype(classDeclaration, supertype)
-                        .addProperties(propertySpecList)
+                        .addProperties(iconStyledPropertySpecList)
                         .build()
                 )
                 .addProperty(
@@ -54,6 +62,7 @@ class MaterialSymbolCoder(
                         )
                         .build()
                 )
+                .addFunctions(previewIconFunSpecList)
                 .build()
         }
 
