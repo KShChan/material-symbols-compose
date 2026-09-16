@@ -8,10 +8,10 @@ import me.ks.chan.material.symbols.annotation.MaterialSymbolWeight
 import me.ks.chan.material.symbols.ksp.annotation.MaterialSymbolIcon
 import me.ks.chan.material.symbols.ksp.ext.asPascalCase
 
-class MaterialDesignIconsRepository(private val kspLogger: KSPLogger) {
+class MaterialDesignIconsRepository(kspLogger: KSPLogger): KSPLogger by kspLogger {
 
     operator fun invoke(icon: String, materialSymbolIcon: MaterialSymbolIcon): String {
-        kspLogger.info(
+        info(
             "Icon=${icon.asPascalCase}: " +
                 "Style=${materialSymbolIcon.style.name}, " +
                 "Weight=${materialSymbolIcon.weight.name}, " +

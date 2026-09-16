@@ -14,7 +14,9 @@ import me.ks.chan.material.symbols.ksp.validator.ClassValidator.Result.Error
 import me.ks.chan.material.symbols.ksp.validator.ClassValidator.Result.Filter
 import me.ks.chan.material.symbols.ksp.validator.ClassValidator.Result.Pass
 
-class ClassValidator(private val kspLogger: KSPLogger): KSDefaultVisitor<Unit, ClassValidator.Result>() {
+class ClassValidator(kspLogger: KSPLogger):
+    KSDefaultVisitor<Unit, ClassValidator.Result>(),
+    KSPLogger by kspLogger {
 
     sealed class Result(val classDeclaration: KSClassDeclaration) {
 
@@ -35,11 +37,11 @@ class ClassValidator(private val kspLogger: KSPLogger): KSDefaultVisitor<Unit, C
         classDeclaration: KSClassDeclaration, data: Unit
     ): Result = when {
         classDeclaration.getDeclaredFunctions().any(KSFunctionDeclaration::isAbstract) -> {
-            kspLogger.abstractFunctionError(classDeclaration)
+            classDeclaration.abstractFunctionError()
             classDeclaration.errorResult
         }
         classDeclaration.isOpen().not() -> {
-            kspLogger.nonOpenClassInfo(classDeclaration)
+            classDeclaration.nonOpenClassInfo()
             classDeclaration.filterResult
         }
         else -> {
@@ -53,7 +55,7 @@ class ClassValidator(private val kspLogger: KSPLogger): KSDefaultVisitor<Unit, C
                     classDeclaration.errorResult
                 }
                 propertyValidationResultList.none { it == PropertyValidator.Result.Valid } -> {
-                    kspLogger.noneOverridablePropertyInfo(classDeclaration)
+                    classDeclaration.noneOverridablePropertyInfo()
                     classDeclaration.filterResult
                 }
                 else -> { classDeclaration.passResult }
@@ -72,29 +74,26 @@ private inline val KSClassDeclaration.filterResult: Filter
 private inline val KSClassDeclaration.errorResult: Error
     get() = Error(this)
 
-private fun KSPLogger.abstractFunctionError(
-    classDeclaration: KSClassDeclaration
-) {
-    error(
+context(kspLogger: KSPLogger)
+private fun KSClassDeclaration.abstractFunctionError() {
+    kspLogger.error(
         message = "MaterialSymbol class should not contain any abstract function.",
-        classDeclaration,
+        symbol = this
     )
 }
 
-private fun KSPLogger.nonOpenClassInfo(
-    classDeclaration: KSClassDeclaration
-) {
-    info(
+context(kspLogger: KSPLogger)
+private fun KSClassDeclaration.nonOpenClassInfo() {
+    kspLogger.info(
         message = "MaterialSymbol class should be declaration as open/abstract class or interface.",
-        classDeclaration,
+        symbol = this
     )
 }
 
-private fun KSPLogger.noneOverridablePropertyInfo(
-    classDeclaration: KSClassDeclaration
-) {
-    info(
+context(kspLogger: KSPLogger)
+private fun KSClassDeclaration.noneOverridablePropertyInfo() {
+    kspLogger.info(
         message = "MaterialSymbol class has not declared overridable property.",
-        classDeclaration,
+        symbol = this
     )
 }

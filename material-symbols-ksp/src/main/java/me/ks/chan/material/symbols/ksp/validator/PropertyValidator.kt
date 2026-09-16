@@ -16,7 +16,9 @@ import me.ks.chan.material.symbols.annotation.Style
 import me.ks.chan.material.symbols.ksp.ext.ComposeUiVectorGraphics
 import me.ks.chan.material.symbols.ksp.ext.annotationExists
 
-class PropertyValidator(private val kspLogger: KSPLogger): KSDefaultVisitor<Boolean, PropertyValidator.Result>() {
+class PropertyValidator(kspLogger: KSPLogger):
+    KSDefaultVisitor<Boolean, PropertyValidator.Result>(),
+    KSPLogger by kspLogger {
 
     override fun defaultHandler(node: KSNode, data: Boolean): Result =
         throw IllegalAccessError()
@@ -37,11 +39,11 @@ class PropertyValidator(private val kspLogger: KSPLogger): KSDefaultVisitor<Bool
         return when {
             // Abstract property with invalid type
             isAbstractProperty && !isValidPropertyType -> {
-                kspLogger.invalidAbstractPropertyError(property)
+                property.invalidAbstractPropertyError()
                 Result.Error
             }
             isAbstractProperty && !isAnnotatedProperty -> {
-                kspLogger.noStyleAnnotatedPropertyError(property)
+                property.noStyleAnnotatedPropertyError()
                 Result.Error
             }
             // Not targeted property
@@ -50,20 +52,20 @@ class PropertyValidator(private val kspLogger: KSPLogger): KSDefaultVisitor<Bool
                 Result.Filter
             }
             !isOpenProperty && isValidPropertyType -> {
-                kspLogger.finalPropertyInfo(property)
+                property.finalPropertyInfo()
                 Result.Filter
             }
             // Filter implemented property with @Style annotated
             !isAbstractProperty && isOpenProperty && isValidPropertyType -> {
-                kspLogger.overriddenPropertyWarning(property)
+                property.overriddenPropertyWarning()
                 Result.Filter
             }
             isPreviewIcon && isSkipPreview -> {
-                kspLogger.previewIconAndSkipMutuallyExclusiveError(property)
+                property.previewIconAndSkipMutuallyExclusiveError()
                 Result.Error
             }
             isProtected && data && !isSkipPreview -> {
-                kspLogger.previewIconInvalidAccessError(property)
+                property.previewIconInvalidAccessError()
                 Result.Error
             }
             else -> { Result.Valid }
@@ -72,45 +74,50 @@ class PropertyValidator(private val kspLogger: KSPLogger): KSDefaultVisitor<Bool
 
 }
 
-private fun KSPLogger.invalidAbstractPropertyError(propertyDeclaration: KSPropertyDeclaration) {
-    val imageVector = ComposeUiVectorGraphics.ImageVector.full()
-    error(
-        message = "MaterialSymbol member abstract property must be typed as ${imageVector}.",
-        symbol = propertyDeclaration
+context(kspLogger: KSPLogger)
+private fun KSPropertyDeclaration.invalidAbstractPropertyError() {
+    kspLogger.error(
+        message = "MaterialSymbol member abstract property must be typed as ${ComposeUiVectorGraphics.ImageVector.full()}.",
+        symbol = this
     )
 }
 
-private fun KSPLogger.noStyleAnnotatedPropertyError(propertyDeclaration: KSPropertyDeclaration) {
-    error(
+context(kspLogger: KSPLogger)
+private fun KSPropertyDeclaration.noStyleAnnotatedPropertyError() {
+    kspLogger.error(
         message = "MaterialSymbol class member abstract property should be annotated with @Style.",
-        symbol = propertyDeclaration
+        symbol = this
     )
 }
 
-private fun KSPLogger.finalPropertyInfo(propertyDeclaration: KSPropertyDeclaration) {
-    info(
+context(kspLogger: KSPLogger)
+private fun KSPropertyDeclaration.finalPropertyInfo() {
+    kspLogger.info(
         message = "MaterialSymbol class member final property will be skipped.",
-        symbol = propertyDeclaration
+        symbol = this
     )
 }
 
-private fun KSPLogger.overriddenPropertyWarning(propertyDeclaration: KSPropertyDeclaration) {
-    warn(
+context(kspLogger: KSPLogger)
+private fun KSPropertyDeclaration.overriddenPropertyWarning() {
+    kspLogger.warn(
         message = "MaterialSymbol member implemented property will be skipped.",
-        symbol = propertyDeclaration
+        symbol = this
     )
 }
 
-private fun KSPLogger.previewIconAndSkipMutuallyExclusiveError(propertyDeclaration: KSPropertyDeclaration) {
-    error(
+context(kspLogger: KSPLogger)
+private fun KSPropertyDeclaration.previewIconAndSkipMutuallyExclusiveError() {
+    kspLogger.error(
         message = "PreviewIcon and SkipPreview annotations are mutually exclusive with each other.",
-        symbol = propertyDeclaration
+        symbol = this
     )
 }
 
-private fun KSPLogger.previewIconInvalidAccessError(propertyDeclaration: KSPropertyDeclaration) {
-    error(
+context(kspLogger: KSPLogger)
+private fun KSPropertyDeclaration.previewIconInvalidAccessError() {
+    kspLogger.error(
         message = "PreviewIcon should not be protected",
-        symbol = propertyDeclaration
+        symbol = this
     )
 }
