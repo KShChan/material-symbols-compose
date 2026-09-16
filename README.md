@@ -46,20 +46,36 @@
 ```kotlin
 // import me.ks.chan.material.symbols.annotation.MaterialSymbol
 // import me.ks.chan.material.symbols.annotation.MaterialSymbolStyle
+// import me.ks.chan.material.symbols.annotation.PreviewIcon
+// import me.ks.chan.material.symbols.annotation.SkipPreview
 // import me.ks.chan.material.symbols.annotation.Style
 // import me.ks.chan.material.symbols.annotation.Filled
-// For icon containing numeric characters, for example `Exposure Plus 1`, make sure to define as parameter of annotation
-// @MaterialSymbol("exposure_plus_1")
-// If your icon does not contain numeric characters, you may directly use pascal case to default classname
-@Suppress("PropertyName")
+
+/**
+ * For icon containing numeric characters, for example `Exposure Plus 1`, make sure to define as parameter of annotation
+ * If your icon does not contain numeric characters, you may directly use pascal case to default classname
+ **/
+@MaterialSymbol("exposure_plus_1")
+/**
+ * [PreviewIcon] annotated at class-level will generate all [Style] annotated unless [SkipPreview] 
+ * is declared specially for specific [Style] annotated delegate.
+ * You can also declare [PreviewIcon] for specific [Style] annotated delegate so that declared
+ * will be generated specifically
+ **/
+@PreviewIcon
 @MaterialSymbol
 interface Home {
+    
+    @Suppress("PropertyName")
     @Style(MaterialSymbolStyle.Rounded)
     val Rounded: ImageVector
-
+    
+    @SkipPreview    // If you don't want to generate preview composable function for this
+    @Suppress("PropertyName")
     @Style(MaterialSymbolStyle.Rounded)
     @Filled
     val Filled: ImageVector
+    
 }
 ```
 Then, build the icon with clicking Gradle panel `Gradle->Tasks->other->kspDebugKotlin`
@@ -99,7 +115,7 @@ private fun Preview() {
 ```
 ![](img/img_col_home_buttons.png)
 
-For more detail, you can refers to [interface](app/src/main/java/me/ks/chan/material/symbols/example/icon/Home.kt) 
+For more detail, you can refer to [interface](app/src/main/java/me/ks/chan/material/symbols/example/icon/Home.kt) 
 or [abstract class](app/src/main/java/me/ks/chan/material/symbols/example/icon/Settings.kt) 
 implementation examples.
 
