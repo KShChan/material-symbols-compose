@@ -1,14 +1,13 @@
 package me.ks.chan.material.symbols.ksp.visitor
 
-import com.google.devtools.ksp.KspExperimental
 import com.google.devtools.ksp.getDeclaredProperties
 import com.google.devtools.ksp.isAbstract
-import com.google.devtools.ksp.isAnnotationPresent
 import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.google.devtools.ksp.symbol.KSVisitorVoid
+import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.ksp.toClassName
 import me.ks.chan.material.symbols.annotation.Filled
 import me.ks.chan.material.symbols.annotation.Grade
@@ -44,10 +43,11 @@ class MaterialSymbolClassVisitor(
     override fun visitClassDeclaration(classDeclaration: KSClassDeclaration, data: Unit) {
         val previewAllIcons = classDeclaration.annotationExists<PreviewIcon>()
 
-        val materialSymbolPreviewRepository = MaterialSymbolPreviewRepository(classDeclaration)
+        val toPreviewIconFunSpec: KSPropertyDeclaration.() -> FunSpec =
+            MaterialSymbolPreviewRepository(classDeclaration)::invoke
 
         val iconName by classDeclaration.materialSymbolName
-        val iconStyledPropertySpecList = classDeclaration.getDeclaredProperties()
+        val pairedSpecList = classDeclaration.getDeclaredProperties()
             /**
              * Use single method (i.e., [mapNotNullTo]) to do both
              * (1) Filtering out abstract properties with @Style annotation; and
@@ -61,25 +61,29 @@ class MaterialSymbolClassVisitor(
                         // Map to property spec list
                         val materialSymbolIcon = propertyDeclaration.asMaterialSymbolIcon
 
-                        val isSkipPreview = propertyDeclaration.annotationExists<SkipPreview>()
-                        val isPreviewIcon = propertyDeclaration.annotationExists<PreviewIcon>()
-                        if (previewAllIcons && !isSkipPreview || isPreviewIcon) {
-                            materialSymbolPreviewRepository += propertyDeclaration
-                        }
-
-                        iconName.buildIconUrlWith(materialSymbolIcon)
+                        val propertySpec = iconName.buildIconUrlWith(materialSymbolIcon)
                             .requestMaterialSymbol()
                             .processWith(VectorDrawableRepository)
                             .processWith(PathBuilderRepository)
                             .processWith(
                                 MaterialSymbolsPropertyRepository(propertyDeclaration, materialSymbolIcon)
                             )
+
+                        val isSkipPreview = propertyDeclaration.annotationExists<SkipPreview>()
+                        val isPreviewIcon = propertyDeclaration.annotationExists<PreviewIcon>()
+                        val funSpec = when {
+                            previewAllIcons && !isSkipPreview || isPreviewIcon -> {
+                                propertyDeclaration.toPreviewIconFunSpec()
+                            }
+                            else -> { null }
+                        }
+
+                        propertySpec to funSpec
                     }
             }
-        val previewIconFunSpecList = materialSymbolPreviewRepository.asFunSpecList
 
-        codeGenerator starts
-            MaterialSymbolCoder(classDeclaration, iconStyledPropertySpecList, previewIconFunSpecList)
+        val (propertySpec, funSpec) = pairedSpecList.unzip()
+        codeGenerator starts MaterialSymbolCoder(classDeclaration, propertySpec, funSpec.filterNotNull())
     }
 
 }

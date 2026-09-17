@@ -18,24 +18,23 @@ class MaterialSymbolPreviewRepository(classDeclaration: KSClassDeclaration) {
         propertyDeclarationList += propertyDeclaration
     }
 
-    val asFunSpecList: List<FunSpec>
-        get() = propertyDeclarationList.map { propertyDeclaration ->
-            val property = propertyDeclaration.simpleName.asString()
+    operator fun invoke(propertyDeclaration: KSPropertyDeclaration): FunSpec {
+        val property = propertyDeclaration.simpleName.asString()
 
-            FunSpec.builder(name = "${classname}${property}Preview")
-                // @Preview
-                .addAnnotation(ComposeUiToolingPreview.Preview.className())
-                // @Composable
-                .addAnnotation(ComposeRuntime.Composable.className())
-                .addModifiers(KModifier.PRIVATE)
-                .addStatement(
-                    format = "${ComposeMaterial3.Icon.short()}(imageVector = %L.%N, contentDescription = %L)",
-                    args = arrayOf(
-                        /*imageVector = */"${classname}Impl", property,
-                        /*contentDescription = */null
-                    )
+        return FunSpec.builder(name = "${classname}${property}Preview")
+            // @Preview
+            .addAnnotation(ComposeUiToolingPreview.Preview.className())
+            // @Composable
+            .addAnnotation(ComposeRuntime.Composable.className())
+            .addModifiers(KModifier.PRIVATE)
+            .addStatement(
+                format = "${ComposeMaterial3.Icon.short()}(imageVector = %L.%N, contentDescription = %L)",
+                args = arrayOf(
+                    /*imageVector = */"${classname}Impl", property,
+                    /*contentDescription = */null
                 )
-                .build()
-        }
+            )
+            .build()
+    }
 
 }
