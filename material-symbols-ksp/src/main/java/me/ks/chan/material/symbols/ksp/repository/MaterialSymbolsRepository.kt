@@ -6,11 +6,9 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
-import okhttp3.WebSocket
 
 class MaterialSymbolsRepository(okHttpClient: OkHttpClient, kspLogger: KSPLogger):
     Call.Factory by okHttpClient,
-    WebSocket.Factory by okHttpClient,
     KSPLogger by kspLogger {
 
     private inline val String.asRequest: Request
@@ -24,7 +22,12 @@ class MaterialSymbolsRepository(okHttpClient: OkHttpClient, kspLogger: KSPLogger
 
     operator fun invoke(url: String): String {
         info(url)
-        return url.asRequest.toResponse.body.string()
+        return url.asRequest.toResponse.use { response ->
+            if (response.isSuccessful.not()) {
+                error("Failed to fetch material symbol icon at $url: ${response.code}")
+            }
+            response.body.string()
+        }
     }
 
 }
