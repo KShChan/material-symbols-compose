@@ -4,17 +4,13 @@ import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.ksp.toClassName
 import me.ks.chan.material.symbols.ksp.ext.ComposeMaterial3
 import me.ks.chan.material.symbols.ksp.ext.ComposeRuntime
 import me.ks.chan.material.symbols.ksp.ext.ComposeUiToolingPreview
-import me.ks.chan.material.symbols.ksp.ext.Importable
 
-class MaterialSymbolPreviewRepository(
-    classDeclaration: KSClassDeclaration
-) {
+class MaterialSymbolPreviewRepository(classDeclaration: KSClassDeclaration) {
 
-    private val supertype = "${classDeclaration.toClassName().simpleName}Impl"
+    private val classname: String = classDeclaration.simpleName.asString()
 
     private val propertyDeclarationList = mutableListOf<KSPropertyDeclaration>()
 
@@ -24,16 +20,18 @@ class MaterialSymbolPreviewRepository(
 
     val asFunSpecList: List<FunSpec>
         get() = propertyDeclarationList.map { propertyDeclaration ->
-            FunSpec.builder(name = "${propertyDeclaration.simpleName.asString()}Preview")
+            val property = propertyDeclaration.simpleName.asString()
+
+            FunSpec.builder(name = "${classname}${property}Preview")
                 // @Preview
                 .addAnnotation(ComposeUiToolingPreview.Preview.className())
                 // @Composable
                 .addAnnotation(ComposeRuntime.Composable.className())
                 .addModifiers(KModifier.PRIVATE)
                 .addStatement(
-                    format = "${ComposeMaterial3.Icon.short(name = Importable.NameType.Class)}(imageVector = %L, contentDescription = %L)",
+                    format = "${ComposeMaterial3.Icon.short()}(imageVector = %L.%N, contentDescription = %L)",
                     args = arrayOf(
-                        /*imageVector = */"${supertype}.${propertyDeclaration.simpleName.asString()}",
+                        /*imageVector = */"${classname}Impl", property,
                         /*contentDescription = */null
                     )
                 )
