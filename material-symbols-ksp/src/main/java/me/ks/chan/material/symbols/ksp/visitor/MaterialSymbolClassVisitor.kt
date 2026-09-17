@@ -91,8 +91,7 @@ private inline val KSClassDeclaration.materialSymbolName: Lazy<String>
     }
 
 private inline val KSPropertyDeclaration.isStyleAnnotatedAbstractProperty: Boolean
-    @OptIn(KspExperimental::class)
-    get() = isAnnotationPresent(Style::class) && isAbstract()
+    get() = annotationExists<Style>() && isAbstract()
 
 private val KSPropertyDeclaration.asMaterialSymbolIcon: MaterialSymbolIcon
     get() = MaterialSymbolIcon(

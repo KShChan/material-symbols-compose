@@ -2,6 +2,7 @@ package me.ks.chan.material.symbols.ksp.ext
 
 import com.google.devtools.ksp.KspExperimental
 import com.google.devtools.ksp.getAnnotationsByType
+import com.google.devtools.ksp.isAnnotationPresent
 import com.google.devtools.ksp.symbol.KSAnnotated
 
 @OptIn(KspExperimental::class)
@@ -19,4 +20,5 @@ inline fun <reified A: Annotation, R> KSAnnotated.annotationOrNull(transform: A.
     annotationOrNull<A>()?.transform()
 
 inline fun <reified A: Annotation> KSAnnotated.annotationExists(): Boolean =
-    annotationOrNull<A>() != null
+    @OptIn(KspExperimental::class)
+    isAnnotationPresent(A::class)

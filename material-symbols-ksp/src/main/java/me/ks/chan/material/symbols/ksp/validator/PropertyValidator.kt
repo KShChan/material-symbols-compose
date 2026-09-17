@@ -29,8 +29,7 @@ class PropertyValidator(kspLogger: KSPLogger):
         val isAbstractProperty = property.isAbstract()
         val isValidPropertyType = property.type.resolve().toClassName() ==
             ComposeUiVectorGraphics.ImageVector.className()
-        @OptIn(KspExperimental::class)
-        val isAnnotatedProperty = property.isAnnotationPresent(Style::class)
+        val isAnnotatedProperty = property.annotationExists<Style>()
         val isOpenProperty = property.isOpen()
         val isPreviewIcon = property.annotationExists<PreviewIcon>()
         val isSkipPreview = property.annotationExists<SkipPreview>()
