@@ -9,8 +9,7 @@ internal sealed class Importable {
 
     abstract val packageName: String
 
-    protected open val classname: String
-        get() = this::class.java.simpleName
+    protected open val classname: String by lazy { this::class.simpleName!! }
 
     fun short(name: NameType = NameType.Class): String = classname.let {
         it.takeIf { name == NameType.Class } ?: it.replaceFirstChar(Char::lowercaseChar)
