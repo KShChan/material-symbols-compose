@@ -1,8 +1,6 @@
 package me.ks.chan.material.symbols.ksp.validator
 
-import com.google.devtools.ksp.KspExperimental
 import com.google.devtools.ksp.isAbstract
-import com.google.devtools.ksp.isAnnotationPresent
 import com.google.devtools.ksp.isOpen
 import com.google.devtools.ksp.isProtected
 import com.google.devtools.ksp.processing.KSPLogger
@@ -20,8 +18,9 @@ class PropertyValidator(kspLogger: KSPLogger):
     KSDefaultVisitor<Boolean, PropertyValidator.Result>(),
     KSPLogger by kspLogger {
 
-    override fun defaultHandler(node: KSNode, data: Boolean): Result =
-        throw IllegalAccessError()
+    override fun defaultHandler(node: KSNode, data: Boolean): Result {
+        throw UnsupportedOperationException()
+    }
 
     enum class Result { Valid, Filter, Error }
 

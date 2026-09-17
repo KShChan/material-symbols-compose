@@ -30,8 +30,9 @@ class ClassValidator(kspLogger: KSPLogger):
 
     private val propertyValidator = PropertyValidator(kspLogger)
 
-    override fun defaultHandler(node: KSNode, data: Unit): Result =
-        throw IllegalAccessError()
+    override fun defaultHandler(node: KSNode, data: Unit): Result {
+        throw UnsupportedOperationException()
+    }
 
     override fun visitClassDeclaration(
         classDeclaration: KSClassDeclaration, data: Unit
