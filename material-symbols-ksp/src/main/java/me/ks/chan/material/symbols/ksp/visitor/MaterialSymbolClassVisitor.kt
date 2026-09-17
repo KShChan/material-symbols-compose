@@ -102,6 +102,6 @@ private val KSPropertyDeclaration.asMaterialSymbolIcon: MaterialSymbolIcon
         style = annotation(Style::value),
         weight = annotationOrNull(Weight::value),
         grade = annotationOrNull(Grade::value),
-        filled = annotationOrNull<Filled>() != null,
+        filled = annotationExists<Filled>(),
         opticalSize = annotationOrNull(OpticalSize::value),
     )
