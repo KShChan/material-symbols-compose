@@ -29,16 +29,9 @@ private fun SymbolProcessorEnvironment.configureProxyOptions(
     Proxy(Proxy.Type.HTTP, InetSocketAddress(proxyHost, proxyPort))
 }
 
-private fun SymbolProcessorEnvironment.configureCacheOptions(
-    kspLogger: KSPLogger
-) = cacheDirectory?.let { cacheDirectory ->
-    val cacheSize = cacheSize
-    kspLogger.info(
-        "MaterialSymbols repository caching is enabled as " +
-            cacheSize +
-            " bytes at \"" +
-            cacheDirectory +
-            "\"."
-    )
-    Cache(File(cacheDirectory), cacheSize)
-}
+private fun SymbolProcessorEnvironment.configureCacheOptions(kspLogger: KSPLogger) =
+    cacheDirectory?.let { cacheDirectory ->
+        val cacheSize = cacheSize
+        kspLogger.info("""MaterialSymbols repository caching is enabled as $cacheSize bytes at "$cacheDirectory".""")
+        Cache(File(cacheDirectory), cacheSize)
+    }
