@@ -29,11 +29,13 @@ import me.ks.chan.material.symbols.annotation.Style
 /** 3. Define `interface` **/
 interface Home {
 
+    @Suppress("PropertyName")
     /** 4. Annotate @Style with parameter filled with [MaterialSymbolStyle] **/
     @Style(MaterialSymbolStyle.Rounded)
     /** 5. Define `abstract` property (without content implementation) **/
-    val rounded: ImageVector    /** 5. Define property type as [ImageVector] **/
+    val Rounded: ImageVector    /** 5. Define property type as [ImageVector] **/
 
+    @Suppress("PropertyName")
     /** Other same as well. **/
     @Style(MaterialSymbolStyle.Rounded)
     /** You can add customization to icon **/
@@ -43,7 +45,7 @@ interface Home {
      * Annotate with the customization if required.
      * (1) @[Weight], (2) @[Grade], (3) @[Filled], (4) @[OpticalSize]
      **/
-    val filled: ImageVector
+    val Filled: ImageVector
 
     /**
      * CAUTION:
@@ -53,7 +55,7 @@ interface Home {
     @Composable
     fun RoundedIcon(contentDescription: String?) {
         Icon(
-            imageVector = rounded,
+            imageVector = Rounded,
             contentDescription = contentDescription
         )
     }
@@ -61,7 +63,7 @@ interface Home {
     @Composable
     fun FilledRoundedIcon(contentDescription: String?) {
         Icon(
-            imageVector = filled,
+            imageVector = Filled,
             contentDescription = contentDescription
         )
     }
@@ -74,7 +76,7 @@ interface Home {
 private fun Preview() {
     Column {
         FilledTonalIconButton(onClick = { /*TODO*/ }) {
-            Icon(imageVector = MaterialSymbols.Home.rounded, contentDescription = null)
+            Icon(imageVector = MaterialSymbols.Home.Rounded, contentDescription = null)
         }
 
         FilledIconButton(onClick = { /*TODO*/ }) {

@@ -21,18 +21,20 @@ import me.ks.chan.material.symbols.annotation.Style
 /** 3. Define `abstract class` **/
 abstract class Settings {
 
+    @Suppress("PropertyName")
     /** 4 Protected icon abstraction property should be skipped preventing preview method access error **/
     @SkipPreview
     /** 5. Annotate @Style with parameter filled with [MaterialSymbolStyle] **/
     @Style(MaterialSymbolStyle.Rounded)
     /** 6. Define `abstract` property **/
     protected /** 5. You can specify protected modifier in abstract class **/
-    abstract val rounded: ImageVector /** 6. Define property type as [ImageVector] **/
+    abstract val Rounded: ImageVector /** 6. Define property type as [ImageVector] **/
 
+    @Suppress("PropertyName")
     /** Public icon abstraction property for preview composable method accessing **/
     @Style(MaterialSymbolStyle.Rounded)
     @Filled
-    abstract val filled: ImageVector /** 6. Define property type as [ImageVector] **/
+    abstract val Filled: ImageVector /** 6. Define property type as [ImageVector] **/
 
     /**
      * CAUTION:
@@ -42,7 +44,7 @@ abstract class Settings {
     @Composable
     fun DefaultIcon(contentDescription: String? = null) {
         Icon(
-            imageVector = rounded,
+            imageVector = Rounded,
             contentDescription = contentDescription
         )
     }

@@ -16,13 +16,15 @@ import me.ks.chan.material.symbols.annotation.Style
 /** 3. Define `interface` **/
 interface CategorySearch {
 
+    @Suppress("PropertyName")
     /** Specific icon style preview composable method generating, other non-annotated will not be generated **/
     @PreviewIcon
     /** 5. Annotate @Style with parameter filled with [MaterialSymbolStyle] **/
     @Style(MaterialSymbolStyle.Rounded)
     /** 6. Define `abstract` property (without content implementation) **/
-    val rounded: ImageVector    /** 5. Define property type as [ImageVector] **/
+    val Rounded: ImageVector    /** 5. Define property type as [ImageVector] **/
 
+    @Suppress("PropertyName")
     /** Other same as well. **/
     @Style(MaterialSymbolStyle.Rounded)
     /** You can add customization to icon **/
@@ -32,6 +34,6 @@ interface CategorySearch {
      * Annotate with the customization if required.
      * (1) @[Weight], (2) @[Grade], (3) @[Filled], (4) @[OpticalSize]
      **/
-    val filled: ImageVector
+    val Filled: ImageVector
 
 }
