@@ -2,17 +2,40 @@ package me.ks.chan.material.symbols.ksp.ext
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 
 internal sealed class Importable {
 
-    enum class NameType { Class, Method }
+    sealed class NameType {
+
+        data object Class: NameType()
+
+        data object Method: NameType()
+
+        internal val isClass: Boolean
+            get() {
+                @OptIn(ExperimentalContracts::class)
+                contract { returns(true) implies (this@NameType is Class) }
+                return this is Class
+            }
+
+        /** Currently, we don't need `isMethod` yet **/
+        // internal val isMethod: Boolean
+        //     get() {
+        //         @OptIn(ExperimentalContracts::class)
+        //         contract { returns(true) implies (this@NameType is Method) }
+        //         return this is Method
+        //     }
+
+    }
 
     abstract val packageName: String
 
     protected open val classname: String by lazy { this::class.simpleName!! }
 
     fun short(nameType: NameType = NameType.Class): String = classname.let {
-        it.takeIf { nameType == NameType.Class } ?: it.replaceFirstChar(Char::lowercaseChar)
+        it.takeIf { nameType.isClass } ?: it.replaceFirstChar(Char::lowercaseChar)
     }
 
     fun full(nameType: NameType = NameType.Class): String {
