@@ -12,12 +12,6 @@ class MaterialSymbolPreviewRepository(classDeclaration: KSClassDeclaration) {
 
     private val classname: String = classDeclaration.simpleName.asString()
 
-    private val propertyDeclarationList = mutableListOf<KSPropertyDeclaration>()
-
-    operator fun plusAssign(propertyDeclaration: KSPropertyDeclaration) {
-        propertyDeclarationList += propertyDeclaration
-    }
-
     operator fun invoke(propertyDeclaration: KSPropertyDeclaration): FunSpec {
         val property = propertyDeclaration.simpleName.asString()
 
