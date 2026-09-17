@@ -11,16 +11,16 @@ internal sealed class Importable {
 
     protected open val classname: String by lazy { this::class.simpleName!! }
 
-    fun short(name: NameType = NameType.Class): String = classname.let {
-        it.takeIf { name == NameType.Class } ?: it.replaceFirstChar(Char::lowercaseChar)
+    fun short(nameType: NameType = NameType.Class): String = classname.let {
+        it.takeIf { nameType == NameType.Class } ?: it.replaceFirstChar(Char::lowercaseChar)
     }
 
-    fun full(name: NameType = NameType.Class): String {
-        return "${packageName}.${short(name)}"
+    fun full(nameType: NameType = NameType.Class): String {
+        return "${packageName}.${short(nameType)}"
     }
 
-    fun className(name: NameType = NameType.Class): ClassName {
-        return ClassName(packageName, short(name))
+    fun className(nameType: NameType = NameType.Class): ClassName {
+        return ClassName(packageName, short(nameType))
     }
 
 }
