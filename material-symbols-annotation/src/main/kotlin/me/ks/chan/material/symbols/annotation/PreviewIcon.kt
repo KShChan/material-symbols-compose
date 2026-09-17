@@ -22,12 +22,12 @@ package me.ks.chan.material.symbols.annotation
  * import me.ks.chan.material.symbols.annotation.MaterialSymbol
  * import me.ks.chan.material.symbols.annotation.MaterialSymbolStyle
  * import me.ks.chan.material.symbols.annotation.Style
- * import me.ks.chan.material.symbols.annotation.SymbolPreview
+ * import me.ks.chan.material.symbols.annotation.PreviewIcon
  *
  * @MaterialSymbol
  * interface Home {
  *
- *     @SymbolPreview
+ *     @PreviewIcon
  *     @Style(MaterialSymbolStyle.Rounded)
  *     val Rounded: ImageVector     // Preview composable function will be generated
  *
@@ -49,10 +49,10 @@ package me.ks.chan.material.symbols.annotation
  * import me.ks.chan.material.symbols.annotation.MaterialSymbolStyle
  * import me.ks.chan.material.symbols.annotation.SkipPreview
  * import me.ks.chan.material.symbols.annotation.Style
- * import me.ks.chan.material.symbols.annotation.SymbolPreview
+ * import me.ks.chan.material.symbols.annotation.PreviewIcon
  *
  * @MaterialSymbol
- * @SymbolPreview
+ * @PreviewIcon
  * interface Home {
  *
  *     @Style(MaterialSymbolStyle.Rounded)
